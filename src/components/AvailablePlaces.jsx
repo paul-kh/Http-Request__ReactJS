@@ -9,17 +9,17 @@ export default function AvailablePlaces({ onSelectPlace }) {
    * Sending http GET request to get all available places from backend server.
    *****************************************************************************/
 
-  // Use useEffect() to prevent unfinite loop
+  // Use useEffect() to prevent infinite loop
   useEffect(() => {
-    // Send http request to backend using vanilla js method 'fetch()'
-    fetch("http://localhost:3000/places")
-      .then((response) => {
-        // using the standard json() method to extract data in response object
-        return response.json();
-      })
-      .then((resData) => {
-        setAvailablePlaces(resData.places);
-      });
+    // Use async await in modern JavaScript instead of promise function form ().then()
+    async function fetchPlaces() {
+      const response = await fetch("http://localhost:3000/places");
+      const resData = await response.json();
+      setAvailablePlaces(resData.places);
+    }
+
+    // we must execute the async function inside of this useEffect()
+    fetchPlaces();
   }, []);
 
   return (
