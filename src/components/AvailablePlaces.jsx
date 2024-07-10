@@ -1,10 +1,13 @@
 import { useState, useEffect } from "react";
 
 import Places from "./Places.jsx";
+import Error from "./Error.jsx";
 
 export default function AvailablePlaces({ onSelectPlace }) {
+  // Note: when fetching data, it's very common to have the below 3 pieces of states
   const [isFetching, setIsFetching] = useState(false); // status of data loading/fetching
   const [availablePlaces, setAvailablePlaces] = useState([]); // fetched loaded data
+  const [error, setError] = useState(); // for showing pential error on the UI when failed to fetch data
 
   /*****************************************************************************
    * Sending http GET request to get all available places from backend server.
@@ -15,9 +18,24 @@ export default function AvailablePlaces({ onSelectPlace }) {
     // Use async await in modern JavaScript instead of promise function form ().then()
     async function fetchPlaces() {
       setIsFetching(true);
-      const response = await fetch("http://localhost:3000/places");
-      const resData = await response.json();
-      setAvailablePlaces(resData.places);
+
+      // Handle Error when sending Http request
+      try {
+        const response = await fetch("http://localhost:3000/placessss");
+        const resData = await response.json();
+
+        if (!response.ok) {
+          const error = new Error("Failed to fetch places");
+          throw error;
+        }
+        setAvailablePlaces(resData.places);
+      } catch (error) {
+        setError({
+          message:
+            error.message || "Could not fetch places, please try again later.",
+        });
+      }
+
       setIsFetching(false);
     }
 
@@ -25,6 +43,9 @@ export default function AvailablePlaces({ onSelectPlace }) {
     fetchPlaces();
   }, []);
 
+  if (error) {
+    return <Error title="An Error Occurs" message={error.message} />;
+  }
   return (
     <Places
       title="Available Places"
