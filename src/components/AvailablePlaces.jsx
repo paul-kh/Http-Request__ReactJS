@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 
 import Places from "./Places.jsx";
 import Error from "./Error.jsx";
+import { sortPlacesByDistance } from "../loc.js";
 
 export default function AvailablePlaces({ onSelectPlace }) {
   // Note: when fetching data, it's very common to have the below 3 pieces of states
@@ -21,22 +22,30 @@ export default function AvailablePlaces({ onSelectPlace }) {
 
       // Handle Error when sending Http request
       try {
-        const response = await fetch("http://localhost:3000/placessss");
+        const response = await fetch("http://localhost:3000/places");
         const resData = await response.json();
 
         if (!response.ok) {
           const error = new Error("Failed to fetch places");
           throw error;
         }
-        setAvailablePlaces(resData.places);
+
+        navigator.geolocation.getCurrentPosition((position) => {
+          const sortedPlaces = sortPlacesByDistance(
+            resData.places,
+            position.coords.latitude,
+            position.coords.longitude
+          );
+          setAvailablePlaces(resData.places);
+          setIsFetching(false);
+        });
       } catch (error) {
         setError({
           message:
             error.message || "Could not fetch places, please try again later.",
         });
+        setIsFetching(false);
       }
-
-      setIsFetching(false);
     }
 
     // we must execute the async function inside of this useEffect()
