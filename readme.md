@@ -12,6 +12,7 @@ A tourist wants to find nearest places to put in their wish list for visiting.
 ## Techniques applied
 
 - Using fetch() to get and update data at the backend
+- Using modern JavaScript Async Await functions instead of promise chains
 - Using useEffect hook for handling side effects
 - Using useEffect hook for syncing with browser APIs
 - Usiung useEffect's cleanup function
